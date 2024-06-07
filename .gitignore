@@ -37,3 +37,7 @@ next-env.d.ts
 
 # django virtual environment
 /backend/venv
+
+/backend/__pycache__
+/backend/ListCore/__pycache__
+/backend/task/__pycache__
