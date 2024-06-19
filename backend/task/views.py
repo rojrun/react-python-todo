@@ -23,4 +23,4 @@ collection = db["task"]
 task_details = collection.find({})
 
 for r in task_details:
-  print(f'{r['assigned_to']} - {r['title']}')
+  print(f'{r['assigned_to']} - {r['task']}')
