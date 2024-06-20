@@ -1,7 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 type Todo = {
   id: number;
+  created: string;
+  updated: string;
   assigned_to: string;
   task: string;
   is_complete: boolean;
@@ -17,10 +19,23 @@ const initialState: TodoState = {
   user: "todo",
 };
 
+// Define the async thunk for fetching todo data
+export const fetchTodoData = createAsyncThunk('todo/fetchTodoData',
+  async () => {
+    const resp = await fetch('/');
+    const jsonData = await resp.json();
+    console.log("fetchTodoData: ", jsonData);
+    return jsonData;
+  }
+);
+
 export const todo = createSlice({
   name: "todo",
   initialState,
   reducers: {
+    getAllTodo: (state, action) => {
+      fetchTodoData.fulfilled, ()
+    },
     addTodo: (state, action) => {
       state.list.push(action.payload);
     },
@@ -39,5 +54,5 @@ export const todo = createSlice({
   },
 });
 
-export const { addTodo, removeTodo, updateTodo, toggleTodo } = todo.actions;
+export const { getAllTodo, addTodo, removeTodo, updateTodo, toggleTodo } = todo.actions;
 export default todo.reducer;

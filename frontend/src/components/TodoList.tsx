@@ -1,17 +1,36 @@
 "use client"
 
-import { addTodo, removeTodo, updateTodo, toggleTodo } from "@/redux/features/todo-slice";
+import { getAllTodo, addTodo, removeTodo, updateTodo, toggleTodo } from "@/redux/features/todo-slice";
 import { AppDispatch, RootState } from "@/redux/store";
-import React from "react";
+import React, { Component } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-function TodoList() {
-  const todoList = useSelector((state: RootState) => state.todoReducer.list);
-  const dispatch = useDispatch<AppDispatch>();
-  const [todo, setTodo] = React.useState("");
+class TodoList extends Component {
+  todoList = () => {
+    useSelector((state: RootState) => state.todoReducer.list)
+  };
+  dispatch = () => {
+    useDispatch<AppDispatch>()
+  };
+  state = {
+    todoList: []
+  };
 
-  const handleSubmit = () => {
-    dispatch(
+  // Fetch data from backend
+  async componentDidMount() {
+    try {
+      const res = await fetch('/api/');
+      const todoList = await res.json();
+      this.setState({
+        todoList
+      });
+    } catch(e) {
+      console.log("error: ", e);
+    }
+  }
+
+  handleSubmit = () => {
+    this.dispatch(
       addTodo({
         id: Date.now(),
         created: Date.now(),
@@ -24,45 +43,47 @@ function TodoList() {
     setTodo("");
   };
 
-  const handleDelete = (id: number) => {
-    dispatch(removeTodo(id));
+  handleDelete = (id: number) => {
+    this.dispatch(removeTodo(id));
   };
 
-  const handleUpdate = (id: number) => {
-    dispatch(updateTodo(id));
+  handleUpdate = (id: number) => {
+    this.dispatch(updateTodo(id));
   };
 
-  const handleToggle = (id: number) => {
-    dispatch(toggleTodo(id));
+  handleToggle = (id: number) => {
+    this.dispatch(toggleTodo(id));
   };
 
-  return (
-    <div>
-      <input 
-        type="text"
-        onChange={(e) => setTodo(e.target.value)}
-        value={todo}
-      />
-      <button onClick={handleSubmit}>Add</button>
-      {todoList.map((todo) => {
-        return (
-          <div key={todo.id} className="flex">
-            <input
-              type="checkbox"
-              checked={todo.is_complete}
-              onChange={() => handleToggle(todo.id)}
-            />  
-            {todo.assigned_to}
-            {todo.task}
-
-            <button onClick={() => handleDelete(todo.id)} className="ml-auto">
-              🗑️
-            </button>
-          </div>
-        );
-      })}
-    </div>
-  );
+  render() {
+    return (
+      <div>
+        <input 
+          type="text"
+          onChange={(e) => setTodo(e.target.value)}
+          value={todo}
+        />
+        <button onClick={this.handleSubmit}>Add</button>
+        {this.state.todoList.map((todo) => {
+          return (
+            <div key={todo.id} className="flex">
+              <input
+                type="checkbox"
+                checked={todo.is_complete}
+                onChange={() => this.handleToggle(todo.id)}
+              />  
+              {todo.assigned_to}
+              {todo.task}
+  
+              <button onClick={() => this.handleDelete(todo.id)} className="ml-auto">
+                🗑️
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
 }
 
 export default TodoList;
